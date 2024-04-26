@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-var main = require("./routes/main.js");
+var main = require("./routes/Main.js");
 app.use("/", main);
 
 app.listen(app.get("port"), () => {

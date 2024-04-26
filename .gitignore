@@ -2,8 +2,12 @@
 .env
 .vscode
 
+# temp
+00imsi*
+
 ##json
 pj_node/json/*
+secret.json
 
 ##nodejs
 pj_node/**/node_modules
