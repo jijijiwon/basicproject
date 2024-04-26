@@ -3,7 +3,7 @@
 .vscode
 
 # temp
-00imsi*
+temp/*
 
 ##json
 pj_node/json/*
