@@ -1,0 +1,13 @@
+CREATE TABLE bikesql.sdix_test (
+    SearchId INT NOT NULL PRIMARY KEY,
+    Sx VARCHAR(45) NOT NULL,
+    Sy VARCHAR(45) NOT NULL,
+    Ex VARCHAR(45) NOT NULL,
+    Ey VARCHAR(45) NOT NULL,
+    STotalTime VARCHAR(45) NOT NULL,
+    STotalDistance VARCHAR(45) NOT NULL,
+    BTotalTime VARCHAR(45) NOT NULL,
+    BTotalDistance VARCHAR(45) NOT NULL,
+    OptiPath VARCHAR(45) NOT NULL,
+    Diff VARCHAR(45)
+);
