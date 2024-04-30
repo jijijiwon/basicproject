@@ -1,0 +1,174 @@
+.mainpage .shadow {
+  background: #000000;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  width: 836px;
+  height: 176px;
+}
+.mainpage .rcorner {
+  border: 4px solid #000000;
+  background: #ffffff;
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  width: 22px;
+  height: 22px;
+}
+.mainpage .lcorner {
+  border: 4px solid #000000;
+  background: #ffffff;
+  position: absolute;
+  left: -13px;
+  top: -13px;
+  width: 22px;
+  height: 22px;
+}
+.mainpage .search-path {
+  overflow-wrap: break-word;
+  font-family: "NanumGothic";
+  font-weight: 400;
+  font-size: 132px;
+  letter-spacing: -4px;
+  line-height: 1;
+  color: #000000;
+}
+.mainpage .titlebox {
+  border: 4px solid #000000;
+  background: #0fa958;
+  position: relative;
+  display: flex;
+  padding: 27px 76.4px 10px 32.4px;
+  box-sizing: border-box;
+}
+.mainpage .title {
+  position: relative;
+  margin: 0 1px 114px 0;
+  display: flex;
+  padding: 0 17px 16px 0;
+  box-sizing: border-box;
+}
+.mainpage .container-1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 509px;
+  box-sizing: border-box;
+  font-size: 30px;
+  line-height: 1.5;
+  padding-bottom: 10px;
+}
+.mainpage .text {
+  overflow-wrap: break-word;
+  font-family: "NanumGothic";
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1.3;
+  color: #426b1f;
+}
+.mainpage .container-3 {
+  overflow-wrap: break-word;
+  font-family: "NanumGothic";
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.3;
+  color: #426b1f;
+}
+.mainpage .container {
+  margin: 0 0 27px 1.4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 370.4px;
+  box-sizing: border-box;
+}
+.mainpage .cor {
+  background: #d9d9d9;
+  width: 195px;
+  height: 26px;
+}
+.mainpage .container {
+  border-radius: 24px;
+  border: 2px solid #e6e6e6;
+  background: #fafaf5;
+  margin-bottom: 191px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0 60px 0;
+  width: 930px;
+  box-sizing: border-box;
+}
+.mainpage .bike-1 {
+  background: url("assets/images/bike_1.png") 50% / cover no-repeat;
+  align-self: flex-start;
+  width: 174px;
+  height: 110px;
+}
+.mainpage .arrow-1 {
+  background: #0fa958;
+  margin-left: 30px;
+  width: 850px;
+  height: 20px;
+}
+.mainpage .line-1 {
+  background: #000000;
+  position: absolute;
+  right: 6px;
+  bottom: 17px;
+  width: 845px;
+  height: 3px;
+}
+.mainpage .spot-4 {
+  border-radius: 8px;
+  background: #d9d9d9;
+  position: absolute;
+  right: 0px;
+  bottom: 14px;
+  width: 16px;
+  height: 16px;
+}
+.mainpage .spot-3 {
+  border-radius: 8px;
+  background: #d9d9d9;
+  position: absolute;
+  right: 267px;
+  bottom: 14px;
+  width: 16px;
+  height: 16px;
+}
+.mainpage .spot-2 {
+  border-radius: 8px;
+  background: #d9d9d9;
+  position: absolute;
+  left: 312px;
+  bottom: 14px;
+  width: 16px;
+  height: 16px;
+}
+.mainpage .spot-1 {
+  border-radius: 8px;
+  background: #d9d9d9;
+  position: absolute;
+  left: 123px;
+  bottom: 14px;
+  width: 16px;
+  height: 16px;
+}
+.mainpage .load {
+  position: relative;
+  margin-left: 10px;
+  display: flex;
+  padding-right: 6px;
+  width: 886px;
+  box-sizing: border-box;
+}
+.mainpage {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 124px;
+  width: 1440px;
+  box-sizing: border-box;
+}

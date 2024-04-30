@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bike-transportation</title>
+  </head>
+  <body>
+    <h1>Project Test</h1>
+    <hr />
+    <h1>Search Form</h1>
+    <form id="searchForm">
+      <label for="startX">출발지 X 좌표:</label>
+      <input type="text" id="startX" name="Sx" /><br />
+      <label for="startY">출발지 Y 좌표:</label>
+      <input type="text" id="startY" name="Sy" /><br />
+      <label for="endX">도착지 X 좌표:</label>
+      <input type="text" id="endX" name="Ex" /><br />
+      <label for="endY">도착지 Y 좌표:</label>
+      <input type="text" id="endY" name="Ey" /><br />
+      <button type="submit">검색</button>
+    </form>
+    <div
+      class="bg-[#0FA958] p-[97px_48px_153.5px_48px] w-[1200px] box-sizing-border"
+    >
+      <div
+        class="bg-[#000000] absolute left-[72px] bottom-[243px] w-[797px] h-[151px]"
+      ></div>
+      <div
+        class="relative flex flex-col w-[1028.3px] h-[fit-content] box-sizing-border"
+      >
+        <img
+          class="m-[0_0_113.5px_117.8px] self-center w-[90px] h-[90px]"
+          src="../assets/vectors/common_icon_16_pen_x2.svg"
+        />
+        <div
+          class="border-[4px_solid_#000000] bg-[#FFFFFF] relative m-[0_0_52.5px_0] flex self-start p-[25.5px_0_29.5px_0] w-[796px] box-sizing-border"
+        >
+          <div
+            class="border-[4px_solid_#000000] bg-[#FFFFFF] absolute right-[-13px] bottom-[-12px] w-[22px] h-[22px]"
+          ></div>
+          <div
+            class="border-[4px_solid_#000000] bg-[#FFFFFF] absolute left-[-13px] bottom-[-13px] w-[22px] h-[22px]"
+          ></div>
+          <div
+            class="border-[4px_solid_#000000] bg-[#FFFFFF] absolute top-[-13px] right-[-13px] w-[22px] h-[22px]"
+          ></div>
+          <div
+            class="border-[4px_solid_#000000] bg-[#FFFFFF] absolute left-[-13px] top-[-13px] w-[22px] h-[22px]"
+          ></div>
+          <span
+            class="break-words font-['Whyte_Inktrap','Roboto_Condensed'] font-bold text-[96px] tracking-[-2.9px] leading-[1] text-[#000000]"
+          >
+            Practice designs
+          </span>
+        </div>
+        <div
+          class="border-[4px_solid_#000000] bg-[#FF8577] self-end p-[0_0_56.2px_0] w-[136.3px] h-[62.5px] box-sizing-border"
+        >
+          <img
+            class="w-[37.7px] h-[44.8px]"
+            src="../assets/vectors/cursor_5_x2.svg"
+          />
+        </div>
+      </div>
+      <img
+        class="absolute left-[-282px] top-[-86px] w-[852px] h-[844.2px]"
+        src="../assets/vectors/vector_x2.svg"
+      />
+    </div>
+
+    <!-- <div id="searchResult"></div> -->
+
+    <!-- <script>
+      document
+        .getElementById("searchForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // 기본 동작 중지
+
+          const formData = new FormData(this); // 폼 데이터 가져오기
+          const searchParams = new URLSearchParams(formData); // URL 매개변수로 변환
+
+          try {
+            const response = await fetch(`/search?${searchParams.toString()}`); // 서버에 GET 요청
+            const data = await response.json(); // JSON 형식으로 응답 데이터 파싱
+
+            window.location.href = `http://192.168.1.64:8000/searchResult?SId=${data.SId}&BId=${data.BId}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('searchResult').innerHTML = '<p>검색 중 오류가 발생했습니다.</p>';
+            }
+        });
+    </script> -->
+  </body>
+</html>
