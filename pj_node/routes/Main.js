@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
+const querystring = require("querystring");
 const bodyParser = require("body-parser");
-const XMLHttpRequest = require("xhr2");
 const app = express();
 
 app.get("/Hello", async (req, res) => {
@@ -14,66 +14,94 @@ app.get("/users", async (req, res) => {
   res.json(resp.data);
 });
 
-app.get("/search", (req, res) => {
-  const xhr = new XMLHttpRequest();
-  const { Sx, Sy, Ex, Ey } = req.query; // 요청 파라미터에서 Sx, Sy, Ex, Ey 값을 가져옴
+async function sendRequest(method, url, queryParams = {}, body = {}) {
+  try {
+    const queryString = querystring.stringify(queryParams);
+    const config = {
+      method: method.toUpperCase(),
+      url: queryString ? `${url}?${queryString}` : url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+    };
 
-  // 요청 파라미터로부터 URL 생성
-  const url = `http://192.168.1.64:3000/searchSubway?Sx=${Sx}&Sy=${Sy}&Ex=${Ex}&Ey=${Ey}`;
+    const response = await axios(config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
-  // 생성된 URL을 로그로 출력
-  console.log("Generated URL:", url);
-
-  xhr.open("GET", url);
-  xhr.setRequestHeader("content-type", "application/json");
-  xhr.send();
-
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      const res = JSON.parse(xhr.response);
-      console.log(res);
-    } else {
-      console.log(xhr.status, xhr.statusText);
-    }
-    res.send(xhr.response);
-  };
+app.get("/searchSubway", (req, res) => {
+  const { Sx, Sy, Ex, Ey } = req.query;
+  sendRequest("GET", "http://192.168.1.64:3000/searchSubway", {
+    Sx: Sx,
+    Sy: Sy,
+    Ex: Ex,
+    Ey: Ey,
+  }).then((response1) => {
+    console.log("Response:", response1);
+    sendRequest(
+      "POST",
+      "http://192.168.1.64:3000/saveSubwayPath",
+      {},
+      { coordinates: response1.coordinates, TempId: response1.TempId }
+    )
+      .then((response2) => {
+        console.log("Response:", response2);
+        res.send(response2);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        res.status(500).send("Internal Server Error");
+      });
+  });
 });
 
-// app.get("/search", async () => {
-//   const searchSubway = async (Sx, Sy, Ex, Ey) => {
-//     try {
-//       // FastAPI 서버의 URL
-//       const apiUrl = "http://192.168.1.71:3000/searchSubway";
+app.get("/searchBusBike", (req, res) => {
+  const { Sx, Sy, Ex, Ey } = req.query;
+  sendRequest("GET", "http://192.168.1.64:3000/searchBus", {
+    Sx: Sx,
+    Sy: Sy,
+    Ex: Ex,
+    Ey: Ey,
+  }).then((response1) => {
+    console.log("Response1:", response1);
+    sendRequest(
+      "POST",
+      "http://192.168.1.64:3000/saveBusPath",
+      {},
+      { coordinates: response1.coordinates, TempId: response1.TempId }
+    ).then((response2) => {
+      console.log("Response2:", response2);
+      sendRequest(
+        "PATCH",
+        "http://192.168.1.64:3000/bikeStation",
+        {},
+        { BId: response2.BId }
+      )
+        .then((response3) => {
+          console.log("Response3:", response3);
+          // console.log(typeof response3);
+          // res.send(response3);
+          sendRequest(
+            "PATCH",
+            "http://192.168.1.64:3000/updateBusPath",
+            {},
+            { BId: response3.BId }
+          ).then((response4) => {
+            console.log("Response4:", response4);
+            res.send(response4);
+          });
+        })
 
-//       // 요청 데이터
-//       const requestData = {
-//         Sx: Sx,
-//         Sy: Sy,
-//         Ex: Ex,
-//         Ey: Ey,
-//       };
-
-//       // FastAPI 서버에 POST 요청 보내기
-//       const response = await axios.get(apiUrl, { params: requestData });
-
-//       // 응답 데이터 확인
-//       console.log("Response:", response.data);
-
-//       // 여기에서 응답 데이터를 처리하거나 반환할 수 있습니다.
-//       return response.data;
-//     } catch (error) {
-//       // 오류 처리
-//       console.error("Error:", error.response.data);
-//       throw error;
-//     }
-//   };
-// });
-// // // 테스트를 위한 호출
-// // const Sx = 37.12345;
-// // const Sy = 127.54321;
-// // const Ex = 37.98765;
-// // const Ey = 126.98765;
-
-// // searchSubway(Sx, Sy, Ex, Ey);
+        .catch((error) => {
+          console.error("Error:", error);
+          res.status(500).send("Internal Server Error");
+        });
+    });
+  });
+});
 
 module.exports = app;
