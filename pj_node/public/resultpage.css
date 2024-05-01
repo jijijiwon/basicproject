@@ -45,7 +45,9 @@
   height: 2px;
 }
 .resultpage .emojimetro {
-  margin-right: 65px;
+  margin-left: 20px;
+  margin-right: 45px;
+  margin-top: 20px;
   width: 125px;
   height: 125px;
 }
@@ -286,4 +288,8 @@
   box-sizing: border-box;
   flex-direction: column;
   align-items: center;
+}
+.resultpage .resulttext {
+  font-weight: 500;
+  font-size: 30px;
 }
