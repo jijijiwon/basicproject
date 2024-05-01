@@ -8,7 +8,6 @@ second1=$(echo ${python} | cut -d " " -f7 | cut -d "/" -f1)
 second2=$(echo ${nodejs} | cut -d " " -f7 | cut -d "/" -f1)
 second3=$(echo ${json} | cut -d " " -f7 | cut -d "/" -f1)
 
-
 for var in $second1 $second2 $second3 
     do
         echo $var
@@ -19,3 +18,14 @@ for var in $second1 $second2 $second3
             echo running process not found.
         fi
     done
+
+python=$(netstat -ntlp | grep 3000)
+second4=$(echo ${python} | cut -d " " -f7 | cut -d "/" -f1)
+
+echo $second4
+if [ -n ${second4} ]; then
+    result=$(kill -9 ${second4})
+    echo process is killed.
+else
+    echo running process not found.
+fi

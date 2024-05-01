@@ -1,10 +1,14 @@
 const express = require("express");
+const path = require("path");
 const axios = require("axios");
 const async = require("async");
 const querystring = require("querystring");
 const bodyParser = require("body-parser");
+const { url } = require("inspector");
 const app = express();
+const cors = require("cors");
 
+app.use(cors());
 app.get("/Hello", async (req, res) => {
   const resp = await axios.get("http://192.168.1.64:3000");
   res.json(resp.data);
@@ -54,8 +58,8 @@ app.get("/search", async (req, res) => {
     const resCompare = { SId: responseS2.SId, BId: responseB4.BId };
     const responseFinal = await query7(resCompare);
     console.log("responseFinal:", responseFinal);
-
-    res.send(responseFinal); // 마지막 결과 전송
+    const qs = objectToQueryString(responseFinal.result);
+    res.redirect("/resultpage.html?" + qs); // 마지막 결과 전송
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Internal Server Error");
@@ -124,5 +128,34 @@ function query7(resCompare) {
     { SId: resCompare.SId, BId: resCompare.BId }
   );
 }
+
+function objectToQueryString(obj) {
+  const keyValuePairs = [];
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      keyValuePairs.push(key + "=" + obj[key]);
+    }
+  }
+  return keyValuePairs.join("&");
+}
+
+app.get("/showMap", async (req, res) => {
+  const { SearchId } = req.query;
+  const resB = await sendRequest("GET", "http://192.168.1.64:3000/getMongo", {
+    SearchId: SearchId,
+  });
+  console.log(resB);
+  res.json(resB);
+});
+
+app.get("/driving", async (req, res) => {
+  const { start, goal } = req.query;
+  const result = await sendRequest("GET", "http://192.168.1.64:3000/driving", {
+    start: start,
+    goal: goal,
+  });
+  console.log(result);
+  res.status(200).send(result);
+});
 
 module.exports = app;
