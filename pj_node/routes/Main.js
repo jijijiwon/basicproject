@@ -148,14 +148,4 @@ app.get("/showMap", async (req, res) => {
   res.json(resB);
 });
 
-app.get("/driving", async (req, res) => {
-  const { start, goal } = req.query;
-  const result = await sendRequest("GET", "http://192.168.1.64:3000/driving", {
-    start: start,
-    goal: goal,
-  });
-  console.log(result);
-  res.status(200).send(result);
-});
-
 module.exports = app;
