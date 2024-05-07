@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "async": "^3.2.5",
+    "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "querystring": "^0.2.1",
+    "xhr2": "^0.2.1"
+  }
+}

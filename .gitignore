@@ -15,7 +15,6 @@ pj_node/**/package.json
 pj_node/**/package-lock.json
 pj_node/conf/*
 node_modules
-package.json
 package-lock.json
 
 ##python
