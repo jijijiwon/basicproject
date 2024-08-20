@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <title>resultpage</title>
+    <link rel="stylesheet" href="resultpage.css" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=CID"
+    ></script>
+  </head>
+  <body>
+    <div class="resultpage">
+      <div class="container-3">
+        <div class="pagetitle">RESULT</div>
+        <div class="container-2">
+          <span class="path"> PATH </span>
+          <div class="result">2 result</div>
+        </div>
+        <div class="divider"></div>
+        <div class="container-1">
+          <div class="container">
+            <div class="result">
+              <div class="resultcontent">
+                <img
+                  class="emojimetro"
+                  src="assets/vectors/emojimetro_x2.svg"
+                />
+                <div>
+                  <div class="contenttitle">Subway &amp; Walk</div>
+                  <div class="content">
+                    <div class="vcontent">
+                      <span class="container-4"> 총 소요시간(분) </span>
+                      <span class="resulttext" id="STotalTime"></span>
+                    </div>
+                    <div class="vcontent">
+                      <div class="dist">총 거리(m)</div>
+                      <span class="resulttext" id="STotalDistance"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+            <div class="result">
+              <div class="resultcontent">
+                <div class="bike-2"></div>
+                <div>
+                  <div class="contenttitle">Bus &amp; Bike</div>
+                  <div class="content">
+                    <div class="vcontent">
+                      <span class="container-4"> 총 소요시간(분) </span>
+                      <span class="resulttext" id="BTotalTime"></span>
+                    </div>
+                    <div class="vcontent">
+                      <div class="dist">총 거리(m)</div>
+                      <span class="resulttext" id="BTotalDistance"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sum">
+            <div class="summary">
+              <div class="resulttitle">결과 요약</div>
+              <div class="text1">더 빠르게 도착하는 경로는</div>
+              <div class="text2">
+                <span id="OptiPath">Optipath</span>
+                <span>입니다.</span>
+              </div>
+              <div class="text3">
+                <span id="Diff">diff</span>
+                <span>분 빠르게 도착합니다.</span>
+              </div>
+              <div class="button" id="1" onclick="getMapData(id)">
+                <span class="detail"> 지하철 경로 자세히 보기 </span>
+                <div class="icon">
+                  <img
+                    class="vector-88"
+                    src="assets/vectors/vector_88_x2.svg"
+                  />
+                </div>
+              </div>
+              <div
+                class="button"
+                id="2"
+                onclick="getMapData(id)"
+                style="margin-top: 20px"
+              >
+                <span class="detail"> 버스 경로 자세히 보기 </span>
+                <div class="icon">
+                  <img
+                    class="vector-88"
+                    src="assets/vectors/vector_88_x2.svg"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="map" style="width: 1248px; height: 800px"></div>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log(urlParams);
+
+      const result = {};
+      urlParams.forEach((value, key) => {
+        result[key] = value;
+      });
+      result["SearchId"] = String(result["SearchId"]).padStart(4, "0");
+      console.log(result);
+
+      resultdict = {
+        STotalDistance: result["STotalDistance"],
+        STotalTime: result["STotalTime"],
+        BTotalDistance: result["BTotalDistance"],
+        BTotalTime: result["BTotalTime"],
+        OptiPath: result["OptiPath"],
+        Diff: result["Diff"],
+      };
+
+      for (const key in resultdict) {
+        if (result.hasOwnProperty(key)) {
+          const value = resultdict[key];
+          document.getElementById(key).innerText = value;
+        }
+      }
+
+      // 지도 형성
+      var mapOptions = {
+        center: new naver.maps.LatLng(37.4946287, 127.0276197),
+        zoom: 15,
+      };
+
+      var map = new naver.maps.Map("map", mapOptions);
+
+      async function getMapData(id) {
+        const getUrl = "/showMap?SearchId=" + result["SearchId"];
+        const paths = await axios.get(getUrl);
+        console.log(paths);
+        console.log(id);
+
+        let pathType;
+        if (id == 1) {
+          pathType = paths.data.result.subwaypath;
+        } else {
+          pathType = paths.data.result.buspath;
+        }
+        console.log(pathType);
+        const sx = pathType.coordinates[0];
+        const sy = pathType.coordinates[1];
+        const ex = pathType.coordinates[2];
+        const ey = pathType.coordinates[3];
+
+        for (let i = 0; i < pathType.subPath.length - 1; i++) {
+          drawTranseMarker(pathType.subPath[i].endX, pathType.subPath[i].endY);
+        }
+
+        const mabObj = pathType.info.mapObj;
+        callMapObjApiAJAX(mabObj, sx, sy, ex, ey);
+
+        let makePath = await findWalkBikePath(sx, sy, ex, ey, pathType.subPath);
+        console.log(makePath);
+      }
+
+      //// 함수 정의
+      // 노선 정보 호출 함수
+      function callMapObjApiAJAX(mabObj, sx, sy, ex, ey) {
+        var xhr = new XMLHttpRequest();
+        var url =
+          "https://api.odsay.com/v1/api/loadLane?mapObject=0:0@" +
+          mabObj +
+          "&apiKey=APIKEY";
+        xhr.open("GET", url, true);
+        xhr.send();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var resultJsonData = JSON.parse(xhr.responseText);
+            drawStartMarker(sx, sy);
+            drawEndMarker(ex, ey);
+            console.log(resultJsonData);
+            drawPolyLine(resultJsonData); // 노선그래픽데이터 지도위 표시
+            if (resultJsonData.result.boundary) {
+              var boundary = new naver.maps.LatLngBounds(
+                new naver.maps.LatLng(
+                  resultJsonData.result.boundary.top,
+                  resultJsonData.result.boundary.left
+                ),
+                new naver.maps.LatLng(
+                  resultJsonData.result.boundary.bottom,
+                  resultJsonData.result.boundary.right
+                )
+              );
+              map.panToBounds(boundary);
+            }
+          }
+        };
+      }
+
+      // startPoint 마커 표시 함수
+      function drawStartMarker(x, y) {
+        var marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(y, x),
+          map: map,
+          icon: {
+            url: "assets/images/start.png",
+            size: new naver.maps.Size(64, 64),
+            scaledSize: new naver.maps.Size(50, 50),
+            origin: new naver.maps.Point(0, 0),
+            anchor: new naver.maps.Point(25, 50),
+          },
+        });
+      }
+      // endPoint 마커 표시 함수
+      function drawEndMarker(x, y) {
+        var marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(y, x),
+          map: map,
+          icon: {
+            url: "assets/images/end.png",
+            size: new naver.maps.Size(64, 64),
+            scaledSize: new naver.maps.Size(50, 50),
+            origin: new naver.maps.Point(0, 0),
+            anchor: new naver.maps.Point(25, 50),
+          },
+        });
+      }
+
+      // 환승 마커 표시 함수
+      function drawTranseMarker(x, y) {
+        var marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(y, x),
+          map: map,
+          icon: {
+            url: "assets/images/trans.png",
+            size: new naver.maps.Size(64, 64),
+            scaledSize: new naver.maps.Size(40, 40),
+            origin: new naver.maps.Point(0, 0),
+            anchor: new naver.maps.Point(25, 25),
+          },
+        });
+      }
+
+      // bikestation 마커 표시 함수
+      function drawBikeMarker(x, y) {
+        var marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(y, x),
+          map: map,
+          icon: {
+            url: "assets/images/bikepoint.png",
+            size: new naver.maps.Size(64, 64),
+            scaledSize: new naver.maps.Size(50, 50),
+            origin: new naver.maps.Point(0, 0),
+            anchor: new naver.maps.Point(25, 50),
+          },
+        });
+      }
+
+      // 노선그래픽 데이터를 이용하여 지도위 폴리라인 그려주는 함수
+      function drawPolyLine(data) {
+        var lineArray;
+        for (var i = 0; i < data.result.lane.length; i++) {
+          for (var j = 0; j < data.result.lane[i].section.length; j++) {
+            lineArray = null;
+            lineArray = new Array();
+            for (
+              var k = 0;
+              k < data.result.lane[i].section[j].graphPos.length;
+              k++
+            ) {
+              lineArray.push(
+                new naver.maps.LatLng(
+                  data.result.lane[i].section[j].graphPos[k].y,
+                  data.result.lane[i].section[j].graphPos[k].x
+                )
+              );
+            }
+            console.log(data.result.lane[i].type);
+            createPolylineWithColor(
+              lineArray,
+              data.result.lane[i].type,
+              data.result.lane[i].class
+            );
+          }
+        }
+      }
+
+      // 교통 타입 별 line color 지정 함수
+      function getColorForSubwayLine(lineNumber) {
+        // 각 지하철 호선에 대한 색상 매핑
+        const lineColors = {
+          1: "#003499", // 1호선
+          2: "#37b42d", // 2호선
+          3: "#f5a623", // 3호선
+          4: "#00a8e0", // 4호선
+          5: "#8b50a4", // 5호선
+          6: "#c55c1d", // 6호선
+          7: "#54640d", // 7호선
+          8: "#f9461c", // 8호선
+          9: "#8fc31f", // 9호선
+          104: "#81b64f", // 경의중앙선
+          101: "#00a5de", // 공항철도
+          108: "#e60012", // 경춘선
+          116: "#ffb300", // 수인분당선
+          109: "#D4003B", // 신분당선
+        };
+        return lineColors[lineNumber] || "#000000";
+      }
+
+      function getColorForBusLine(lineNumber) {
+        // 각 지하철 호선에 대한 색상 매핑
+        const lineColors = {
+          1: "#003499", // 일반
+          2: "#37b42d", // 좌석
+          3: "#53b332", // 마을버스
+          4: "#e60012", // 직행좌석
+          5: "#3d5bab", // 공항버스
+          6: "#cc0000", // 간선급행
+          10: "#00ff00", // 외곽
+          11: "#0068b7", // 간선
+          12: "#53b332", // 지선
+          13: "#f2b70a", // 순환
+          14: "#e60012", // 광역
+          15: "#006896", // 급행
+        };
+
+        return lineColors[lineNumber] || "#000000";
+      }
+
+      // 색상 설정, 폴리라인 생성 함수
+      function createPolylineWithColor(lineArray, lineNumber, lineClass) {
+        if (lineClass == 1) {
+          strokeColor = getColorForBusLine(lineNumber);
+        } else {
+          strokeColor = getColorForSubwayLine(lineNumber);
+        }
+        var polyline = new naver.maps.Polyline({
+          map: map,
+          path: lineArray,
+          strokeWeight: 5,
+          strokeColor: strokeColor,
+        });
+      }
+
+      // 도보 및 자전거 점선 생성 함수
+      async function findWalkBikePath(sx, sy, ex, ey, data) {
+        for (let i = 0; i < data.length; i++) {
+          let spx, spy, epx, epy;
+          if (data[i].trafficType == 3 && data[i].distance > 20) {
+            if (i == 0) {
+              spx = sx;
+              spy = sy;
+              epx = data[1].startX;
+              epy = data[1].startY;
+            } else if (i == data.length - 1) {
+              spx = data[i - 1].endX;
+              spy = data[i - 1].endY;
+              epx = ex;
+              epy = ey;
+            } else {
+              spx = data[i - 1].endX;
+              spy = data[i - 1].endY;
+              epx = data[i + 1].startX;
+              epy = data[i + 1].startY;
+            }
+          } else if (data[i].trafficType == 4 && data[i].distance > 20) {
+            spx = data[i].startX;
+            spy = data[i].startY;
+            epx = data[i].endX;
+            epy = data[i].endY;
+
+            drawBikeMarker(spx, spy);
+            drawBikeMarker(epx, epy);
+          }
+          var polyline = new naver.maps.Polyline({
+            map: map,
+            path: [
+              new naver.maps.LatLng(spy, spx),
+              new naver.maps.LatLng(epy, epx),
+            ],
+            strokeColor: "#808080",
+            strokeOpacity: 0.8,
+            strokeWeight: 6,
+            strokeStyle: "shortdashdot",
+            strokeLineCap: "round",
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
